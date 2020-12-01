@@ -5,19 +5,23 @@ class Commit
     @message = message
   end
 
-  # def bark
-  #   puts 'Ruff! Ruff!'
-  # end
+  def refs
+    @refs
+  end
 
-  # def display
-  #   puts "I am of #{@breed} breed and my name is #{@name}"
-  # end
+  def message
+    @message
+  end
+
+  def semver
+    @refs.match(/(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/)
+  end
 end
 
 # make an object
 # Objects are created on the heap
 
-git_log_command = "git log --pretty='format:%d|%s'"
+git_log_command = "git log --pretty='format:%d|%s' --reverse"
 git_log = `#{git_log_command}`
 # puts git_log
 # puts ''
@@ -30,4 +34,7 @@ for each in commit_log
   commits.append(Commit.new(refs, message))
 end
 
-puts commits.inspect
+# puts commits.inspect
+
+first_tagged_commit = commits.first{|x| x.refs.include?("tag")}
+puts first_tagged_commit.semver.named_captures
